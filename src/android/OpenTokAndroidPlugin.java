@@ -383,6 +383,13 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
             // TODO Auto-generated method stub
 
         }
+
+        public void unsubscribe(JSONArray args) {
+            mSession.unsubscribe(mSubscriber);
+            ViewGroup frame = (ViewGroup) cordova.getActivity().findViewById(android.R.id.content);
+            frame.removeView( this.mView );
+            mSubscriber = null;
+        }
     }
 
     @Override
@@ -497,7 +504,10 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
         } else if (action.equals("unpublish")) {
 
         } else if (action.equals("unsubscribe")) {
-
+            Log.i( TAG, "unsubscribe command called");
+            Log.i( TAG, "unsubscribe data: " + args.toString() );
+            RunnableSubscriber runsub = subscriberCollection.get( args.getString(0) );
+            runsub.unsubscribe(args);
         } else if (action.equals("subscribe")) {
             Log.i(TAG, "subscribe command called");
             Log.i(TAG, "subscribe data: " + args.toString());
