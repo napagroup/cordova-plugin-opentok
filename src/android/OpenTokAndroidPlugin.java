@@ -540,7 +540,7 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
     }
 
     @Override
-    public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
+    public boolean execute(String action, JSONArray args, final CallbackContext callbackContext) throws JSONException {
         Log.i(TAG, action);
         // TB Methods
         if (action.equals("initPublisher")) {
@@ -676,7 +676,7 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
                 });
                 return true;
             } else {
-                RunnableSubscriber runsub = subscriberCollection.get(args.getString(0));
+                final RunnableSubscriber runsub = subscriberCollection.get(args.getString(0));
                 if (runsub != null) {
                   cordova.getThreadPool().execute(new Runnable() {
                       public void run() {
