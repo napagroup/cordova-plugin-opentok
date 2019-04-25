@@ -23,6 +23,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.graphics.Color;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -294,7 +296,7 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
         public void onStreamCreated(PublisherKit arg0, Stream arg1) {
             Log.i(TAG, "publisher stream received");
             streamCollection.put(arg1.getStreamId(), arg1);
-            
+
             streamHasAudio.put(arg1.getStreamId(), arg1.hasAudio());
             streamHasVideo.put(arg1.getStreamId(), arg1.hasVideo());
             JSONObject videoDimensions = new JSONObject();
@@ -370,16 +372,24 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
         }
 
         public void removeStreamView() {
-            ViewGroup parent = (ViewGroup) webView.getView().getParent();
-            parent.removeView(this.mView);
-            if(mSubscriber != null) {
-                try {
-                    mSession.unsubscribe(mSubscriber);
-                    mSubscriber.destroy();
-                } catch(Exception e) {
-                    Log.i(TAG, "Could not unsubscribe Subscriber");
+            final View mView = this.mView;
+            // Android framework to run this line of code in the main UI thread, where you can touch
+            // any view you want.
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    ViewGroup parent = (ViewGroup) webView.getView().getParent();
+                    parent.removeView(mView);
+                    if (mSubscriber != null) {
+                        try {
+                            mSession.unsubscribe(mSubscriber);
+                            mSubscriber.destroy();
+                        } catch(Exception e) {
+                            Log.i(TAG, "Could not unsubscribe Subscriber");
+                        }
+                    }
                 }
-            }
+            });
         }
 
         public void run() {
@@ -902,7 +912,7 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
     @Override
     public void onStreamVideoDimensionsChanged(Session session, Stream stream, int width, int height) {
         JSONObject oldValue = this.streamVideoDimensions.get(stream.getStreamId());
-        
+
         JSONObject newValue = new JSONObject();
         try {
             newValue.put("width", width);
@@ -989,7 +999,7 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
                     params.put("session_id", sessionId);
                     if (connectionId != null) {
                         params.put("action", "cp_on_connect");
-                        params.put("connectionId", connectionId);                
+                        params.put("connectionId", connectionId);
                     } else {
                         params.put("action", "cp_initialize");
                     }
