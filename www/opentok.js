@@ -916,6 +916,15 @@ TBSession = (function() {
     return this;
   };
 
+  TBSession.prototype.error = function(event) {
+    var errorEvent;
+    errorEvent = new TBEvent("error");
+    errorEvent.message = event.message;
+    errorEvent.code = event.code;
+    this.dispatchEvent(errorEvent);
+    return this;
+  };
+
   TBSession.prototype.removeEventListener = function(event, handler) {
     this.off(event, handler);
     return this;
