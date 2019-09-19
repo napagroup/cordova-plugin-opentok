@@ -1,5 +1,10 @@
 ## ChangeLog
 
+#### Version 3.4.7 (09.19.2019)
+- Update Android OpenTok SDK 2.16.1 -- [June 2019](https://tokbox.com/developer/sdks/android/release-notes.html)
+- Update iOS OpenTok SDK 2.16.3 -- [Sept 2019](https://tokbox.com/developer/sdks/ios/release-notes.html)
+- Update JavaScript OpenTok SDK 2.16.3 -- [Sept 2019](https://www.npmjs.com/package/@opentok/client)
+
 #### Version 3.4.6 (04.25.2019)
 - Bug Fix for Error: Only the original thread that created a view hierarchy can touch its views.
 
