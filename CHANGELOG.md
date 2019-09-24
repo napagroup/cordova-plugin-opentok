@@ -1,5 +1,10 @@
 ## ChangeLog
 
+#### Version 3.4.8 (09.24.2019)
+- BugFix when disconnecting from a session.
+- triggerJSEvent should fire with or without supporting data.
+- Added a 'warning' event if any try/catch statements failed.
+
 #### Version 3.4.7 (09.19.2019)
 - Update Android OpenTok SDK 2.16.1 -- [June 2019](https://tokbox.com/developer/sdks/android/release-notes.html)
 - Update iOS OpenTok SDK 2.16.3 -- [Sept 2019](https://tokbox.com/developer/sdks/ios/release-notes.html)
