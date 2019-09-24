@@ -1017,7 +1017,7 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
                     JSONObject payload = new JSONObject();
                     try {
                         payload.put("platform", "Android");
-                        payload.put("cp_version", "3.4.8");
+                        payload.put("cp_version", "3.4.9");
                     } catch (JSONException e) {
                         Log.i(TAG, "Error creating payload json object");
                     }
@@ -1026,7 +1026,7 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
                     params.put("partner_id", apiKey);
                     params.put("payload", payload.toString());
                     params.put("source", "https://github.com/opentok/cordova-plugin-opentok");
-                    params.put("build", "2.16.1");
+                    params.put("build", "2.16.2");
                     params.put("session_id", sessionId);
                     if (connectionId != null) {
                         params.put("action", "cp_on_connect");
