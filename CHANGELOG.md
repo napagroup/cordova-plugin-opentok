@@ -1,6 +1,6 @@
 ## ChangeLog
 
-#### Version 3.4.12 (09.25.2019)
+#### Version 3.4.13 (09.25.2019)
 - Update Android OpenTok SDK 2.16.2 -- [Sept 2019](https://tokbox.com/developer/sdks/android/release-notes.html)
 - BugFix when disconnecting from a session.
 - triggerJSEvent should fire with or without supporting data.

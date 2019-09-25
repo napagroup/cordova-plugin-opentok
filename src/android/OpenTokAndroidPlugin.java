@@ -745,13 +745,14 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
             data.put("status", "connected");
             JSONObject connection = createDataFromConnection(mSession.getConnection());
             data.put("connection", connection);
-            String Cid = Session.getConnection().getConnectionId();
+            Cid = Session.getConnection().getConnectionId();
+            Log.i(TAG, "session connected, triggering sessionConnected Event. My Cid is: " + Cid);
         } catch (JSONException e) {
+            Log.i(TAG, "session connected, triggering sessionConnected Event.");
             Log.e(TAG, "JSONException" + e.getMessage());
             triggerJSEvent("sessionEvents", "warning", "onConnected: " + e.getMessage());
         }
         logOT(Cid);
-        Log.i(TAG, "session connected, triggering sessionConnected Event. My Cid is: " + Cid);
         triggerJSEvent("sessionEvents", "sessionConnected", data);
     }
 
@@ -1019,7 +1020,7 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
                     JSONObject payload = new JSONObject();
                     try {
                         payload.put("platform", "Android");
-                        payload.put("cp_version", "3.4.12");
+                        payload.put("cp_version", "3.4.13");
                     } catch (JSONException e) {
                         Log.i(TAG, "Error creating payload json object");
                     }
