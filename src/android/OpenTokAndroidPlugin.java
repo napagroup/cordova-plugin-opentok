@@ -420,7 +420,7 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
             // TODO Auto-generated method stub
             JSONObject eventData = new JSONObject();
             try {
-                String streamId = arg0.getStream() ? arg0.getStream().getStreamId() : "";
+                String streamId = arg0.getStream() != null ? arg0.getStream().getStreamId() : "";
                 eventData.put("streamId", streamId);
             } catch (JSONException e) {
                 Log.e(TAG, "JSONException" + e.getMessage());
@@ -437,7 +437,7 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
             // TODO Auto-generated method stub
             JSONObject eventData = new JSONObject();
             try {
-                String streamId = arg0.getStream() ? arg0.getStream().getStreamId() : "";
+                String streamId = arg0.getStream() != null ? arg0.getStream().getStreamId() : "";
                 eventData.put("streamId", streamId);
             } catch (JSONException e) {
                 Log.e(TAG, "JSONException" + e.getMessage());
@@ -451,8 +451,8 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
         public void onError(SubscriberKit arg0, OpentokError arg1) {
             JSONObject eventData = new JSONObject();
             try {
-                String streamId = arg0.getStream() ? arg0.getStream().getStreamId() : "";
-                int errorCode = arg1.getErrorCode() ? arg1.getErrorCode().getErrorCode() : -1;
+                String streamId = arg0.getStream() != null ? arg0.getStream().getStreamId() : "";
+                int errorCode = arg1.getErrorCode() != null ? arg1.getErrorCode().getErrorCode() : -1;
                 eventData.put("errorCode", errorCode);
                 eventData.put("streamId", streamId);
             } catch (JSONException e) {
@@ -1017,7 +1017,7 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
                     JSONObject payload = new JSONObject();
                     try {
                         payload.put("platform", "Android");
-                        payload.put("cp_version", "3.4.10");
+                        payload.put("cp_version", "3.4.11");
                     } catch (JSONException e) {
                         Log.i(TAG, "Error creating payload json object");
                     }
