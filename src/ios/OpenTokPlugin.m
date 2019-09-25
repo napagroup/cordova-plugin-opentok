@@ -54,7 +54,7 @@
 
     NSMutableDictionary *payload = [[NSMutableDictionary alloc]init];
     [payload setObject:@"iOS" forKey:@"platform"];
-    [payload setObject:@"3.4.14" forKey:@"cp_version"];
+    [payload setObject:@"3.4.15" forKey:@"cp_version"];
     NSMutableDictionary *logData = [[NSMutableDictionary alloc]init];
     [logData setObject:apiKey forKey:@"partner_id"];
     [logData setObject:@"2.16.3" forKey:@"build"];
@@ -457,7 +457,7 @@
 - (void)subscriberDidConnectToStream:(OTSubscriberKit*)sub{
     NSLog(@"iOS Connected To Stream");
     NSMutableDictionary* eventData = [[NSMutableDictionary alloc] init];
-    try {
+    @try {
         NSString* streamId = sub.stream.streamId;
         [eventData setObject:streamId forKey:@"streamId"];
     } @catch (NSException *exception) {
@@ -469,7 +469,7 @@
 - (void)subscriberDidDisconnectFromStream:(OTSubscriberKit*)sub{
     NSLog(@"iOS Disconnected From Stream");
     NSMutableDictionary* eventData = [[NSMutableDictionary alloc] init];
-    try {
+    @try {
         NSString* streamId = sub.stream.streamId;
         [eventData setObject:streamId forKey:@"streamId"];
     } @catch (NSException *exception) {
@@ -480,7 +480,7 @@
 - (void)subscriber:(OTSubscriber*)sub didFailWithError:(OTError*)error{
     NSLog(@"subscriber didFailWithError %@", error);
     NSMutableDictionary* eventData = [[NSMutableDictionary alloc] init];
-    try {
+    @try {
         NSString* streamId = sub.stream.streamId;
         NSNumber* errorCode = [NSNumber numberWithInt:1600];
         [eventData setObject: errorCode forKey:@"errorCode"];
