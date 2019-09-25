@@ -422,13 +422,14 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
             try {
                 String streamId = arg0.getStream() != null ? arg0.getStream().getStreamId() : "";
                 eventData.put("streamId", streamId);
+                Log.i(TAG, "subscriber" + streamId + " is connected");
             } catch (JSONException e) {
+                Log.i(TAG, "subscriber is connected");
                 Log.e(TAG, "JSONException" + e.getMessage());
                 triggerJSEvent("sessionEvents", "warning", "onConnected: " + e.getMessage());
             }
             triggerJSEvent("subscriberEvents", "connected", eventData);
             triggerJSEvent("sessionEvents", "subscribedToStream", eventData); // Backwards compatiblity
-            Log.i(TAG, "subscriber" + streamId + " is connected");
             this.run();
         }
 
@@ -439,12 +440,13 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
             try {
                 String streamId = arg0.getStream() != null ? arg0.getStream().getStreamId() : "";
                 eventData.put("streamId", streamId);
+                Log.i(TAG, "subscriber" + streamId + " is disconnected");
             } catch (JSONException e) {
+                Log.i(TAG, "subscriber is disconnected");
                 Log.e(TAG, "JSONException" + e.getMessage());
                 triggerJSEvent("sessionEvents", "warning", "onDisconnected: " + e.getMessage());
             }
             triggerJSEvent("subscriberEvents", "disconnected", eventData);
-            Log.i(TAG, "subscriber" + streamId + " is disconnected");
         }
 
         @Override
@@ -1017,7 +1019,7 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
                     JSONObject payload = new JSONObject();
                     try {
                         payload.put("platform", "Android");
-                        payload.put("cp_version", "3.4.11");
+                        payload.put("cp_version", "3.4.12");
                     } catch (JSONException e) {
                         Log.i(TAG, "Error creating payload json object");
                     }
