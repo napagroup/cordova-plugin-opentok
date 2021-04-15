@@ -304,6 +304,8 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
                 videoDimensions.put("width", arg1.getVideoWidth());
                 videoDimensions.put("height", arg1.getVideoHeight());
             } catch (JSONException e) {
+                Log.e(TAG, "JSONException" + e.getMessage());
+                triggerJSEvent("sessionEvents", "warning", "onStreamCreated: " + e.getMessage());
             }
             streamVideoDimensions.put(arg1.getStreamId(), videoDimensions);
 
@@ -338,9 +340,11 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
             JSONObject data = new JSONObject();
             try {
                 data.put("audioLevel", audioLevel);
-                triggerJSEvent("publisherEvents", "audioLevelUpdated", data);
             } catch (JSONException e) {
+                Log.e(TAG, "JSONException" + e.getMessage());
+                triggerJSEvent("sessionEvents", "warning", "onAudioLevelUpdated: " + e.getMessage());
             }
+            triggerJSEvent("publisherEvents", "audioLevelUpdated", data);
         }
     }
 
@@ -415,15 +419,17 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
         public void onConnected(SubscriberKit arg0) {
             // TODO Auto-generated method stub
             JSONObject eventData = new JSONObject();
-            String streamId = arg0.getStream().getStreamId();
             try {
+                String streamId = arg0.getStream() != null ? arg0.getStream().getStreamId() : "";
                 eventData.put("streamId", streamId);
-                triggerJSEvent("subscriberEvents", "connected", eventData);
-                triggerJSEvent("sessionEvents", "subscribedToStream", eventData); // Backwards compatiblity
+                Log.i(TAG, "subscriber" + streamId + " is connected");
             } catch (JSONException e) {
+                Log.i(TAG, "subscriber is connected");
                 Log.e(TAG, "JSONException" + e.getMessage());
+                triggerJSEvent("sessionEvents", "warning", "onConnected: " + e.getMessage());
             }
-            Log.i(TAG, "subscriber" + streamId + " is connected");
+            triggerJSEvent("subscriberEvents", "connected", eventData);
+            triggerJSEvent("sessionEvents", "subscribedToStream", eventData); // Backwards compatiblity
             this.run();
         }
 
@@ -431,28 +437,31 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
         public void onDisconnected(SubscriberKit arg0) {
             // TODO Auto-generated method stub
             JSONObject eventData = new JSONObject();
-            String streamId = arg0.getStream().getStreamId();
             try {
+                String streamId = arg0.getStream() != null ? arg0.getStream().getStreamId() : "";
                 eventData.put("streamId", streamId);
-                triggerJSEvent("subscriberEvents", "disconnected", eventData);
+                Log.i(TAG, "subscriber" + streamId + " is disconnected");
             } catch (JSONException e) {
+                Log.i(TAG, "subscriber is disconnected");
                 Log.e(TAG, "JSONException" + e.getMessage());
+                triggerJSEvent("sessionEvents", "warning", "onDisconnected: " + e.getMessage());
             }
-            Log.i(TAG, "subscriber" + streamId + " is disconnected");
+            triggerJSEvent("subscriberEvents", "disconnected", eventData);
         }
 
         @Override
         public void onError(SubscriberKit arg0, OpentokError arg1) {
             JSONObject eventData = new JSONObject();
-            String streamId = arg0.getStream().getStreamId();
-            int errorCode = arg1.getErrorCode().getErrorCode();
             try {
+                String streamId = arg0.getStream() != null ? arg0.getStream().getStreamId() : "";
+                int errorCode = arg1.getErrorCode() != null ? arg1.getErrorCode().getErrorCode() : -1;
                 eventData.put("errorCode", errorCode);
                 eventData.put("streamId", streamId);
-                triggerJSEvent("sessionEvents", "subscribedToStream", eventData);
             } catch (JSONException e) {
                 Log.e(TAG, "JSONException" + e.getMessage());
+                triggerJSEvent("sessionEvents", "warning", "onError: " + e.getMessage());
             }
+            triggerJSEvent("sessionEvents", "subscribedToStream", eventData);
             Log.e(TAG, "subscriber exception: " + arg1.getMessage() + ", stream id: " + arg0.getStream().getStreamId());
         }
 
@@ -467,9 +476,11 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
             JSONObject data = new JSONObject();
             try {
                 data.put("reason", reason);
-                triggerJSEvent("subscriberEvents", "videoDisabled", data);
             } catch(JSONException e) {
+                Log.e(TAG, "JSONException" + e.getMessage());
+                triggerJSEvent("sessionEvents", "warning", "onVideoDisabled: " + e.getMessage());
             }
+            triggerJSEvent("subscriberEvents", "videoDisabled", data);
         }
 
         @Override
@@ -487,9 +498,11 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
             JSONObject data = new JSONObject();
             try {
                 data.put("reason", reason);
-                triggerJSEvent("subscriberEvents", "videoEnabled", data);
             } catch(JSONException e) {
+                Log.e(TAG, "JSONException" + e.getMessage());
+                triggerJSEvent("sessionEvents", "warning", "onVideoEnabled: " + e.getMessage());
             }
+            triggerJSEvent("subscriberEvents", "videoEnabled", data);
         }
 
         // audioLevelListener
@@ -497,9 +510,11 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
             JSONObject data = new JSONObject();
             try {
                 data.put("audioLevel", audioLevel);
-                triggerJSEvent("subscriberEvents", "audioLevelUpdated", data);
             } catch (JSONException e) {
+                Log.e(TAG, "JSONException" + e.getMessage());
+                triggerJSEvent("sessionEvents", "warning", "onAudioLevelUpdated: " + e.getMessage());
             }
+            triggerJSEvent("subscriberEvents", "audioLevelUpdated", data);
         }
 
         public void subscribeToAudio(boolean value) {
@@ -722,20 +737,22 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
     // sessionListener
     @Override
     public void onConnected(Session arg0) {
-        logOT(arg0.getConnection().getConnectionId());
-        Log.i(TAG, "session connected, triggering sessionConnected Event. My Cid is: " +
-                mSession.getConnection().getConnectionId());
         sessionConnected = true;
-
-        connectionCollection.put(mSession.getConnection().getConnectionId(), mSession.getConnection());
-
+        String Cid = "";
         JSONObject data = new JSONObject();
         try {
+            Cid = mSession.getConnection().getConnectionId();
+            connectionCollection.put(Cid, mSession.getConnection());
             data.put("status", "connected");
             JSONObject connection = createDataFromConnection(mSession.getConnection());
             data.put("connection", connection);
+            Log.i(TAG, "session connected, triggering sessionConnected Event. My Cid is: " + Cid);
         } catch (JSONException e) {
+            Log.i(TAG, "session connected, triggering sessionConnected Event.");
+            Log.e(TAG, "JSONException" + e.getMessage());
+            triggerJSEvent("sessionEvents", "warning", "onConnected: " + e.getMessage());
         }
+        logOT(Cid);
         triggerJSEvent("sessionEvents", "sessionConnected", data);
     }
 
@@ -761,8 +778,9 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
         try {
             data.put("reason", "clientDisconnected");
         } catch (JSONException e) {
+            Log.e(TAG, "JSONException" + e.getMessage());
+            triggerJSEvent("sessionEvents", "warning", "onDisconnected: " + e.getMessage());
         }
-
         triggerJSEvent("sessionEvents", "sessionDisconnected", data);
     }
 
@@ -808,6 +826,8 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
             videoDimensions.put("width", arg1.getVideoWidth());
             videoDimensions.put("height", arg1.getVideoHeight());
         } catch (JSONException e) {
+            Log.e(TAG, "JSONException" + e.getMessage());
+            triggerJSEvent("sessionEvents", "warning", "onStreamReceived: " + e.getMessage());
         }
         this.streamVideoDimensions.put(arg1.getStreamId(), videoDimensions);
 
@@ -822,6 +842,8 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
             data.put("message", arg1.getMessage());
             data.put("code", arg1.getErrorCode());
         } catch (JSONException e) {
+            Log.e(TAG, "JSONException" + e.getMessage());
+            triggerJSEvent("sessionEvents", "warning", "onError: " + e.getMessage());
         }
         triggerJSEvent("sessionEvents", "error", data);
     }
@@ -829,14 +851,14 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
     // connectionListener
     public void onConnectionCreated(Session arg0, Connection arg1) {
         Log.i(TAG, "connectionCreated");
-
-        connectionCollection.put(arg1.getConnectionId(), arg1);
-
         JSONObject data = new JSONObject();
         try {
+            connectionCollection.put(arg1.getConnectionId(), arg1);
             JSONObject connection = createDataFromConnection(arg1);
             data.put("connection", connection);
         } catch (JSONException e) {
+            Log.e(TAG, "JSONException" + e.getMessage());
+            triggerJSEvent("sessionEvents", "warning", "onConnectionCreated: " + e.getMessage());
         }
         triggerJSEvent("sessionEvents", "connectionCreated", data);
     }
@@ -844,12 +866,14 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
     public void onConnectionDestroyed(Session arg0, Connection arg1) {
         Log.i(TAG, "connection dropped: " + arg1.getConnectionId());
 
-        connectionCollection.remove(arg1.getConnectionId());
         JSONObject data = new JSONObject();
         try {
+            connectionCollection.remove(arg1.getConnectionId());
             JSONObject connection = createDataFromConnection(arg1);
             data.put("connection", connection);
         } catch (JSONException e) {
+            Log.e(TAG, "JSONException" + e.getMessage());
+            triggerJSEvent("sessionEvents", "warning", "onConnectionDestroyed: " + e.getMessage());
         }
         triggerJSEvent("sessionEvents", "connectionDestroyed", data);
     }
@@ -865,9 +889,11 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
             if (arg3 != null) {
                 data.put("connectionId", arg3.getConnectionId());
             }
-            triggerJSEvent("sessionEvents", "signalReceived", data);
         } catch (JSONException e) {
+            Log.e(TAG, "JSONException" + e.getMessage());
+            triggerJSEvent("sessionEvents", "warning", "onSignalReceived: " + e.getMessage());
         }
+        triggerJSEvent("sessionEvents", "signalReceived", data);
     }
 
     // archiveListener
@@ -879,6 +905,7 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
             triggerJSEvent("sessionEvents", "archiveStarted", data);
         } catch (JSONException e) {
             Log.i(TAG, "archive started: " + id + " - " + name);
+            triggerJSEvent("sessionEvents", "warning", "onArchiveStarted: " + e.getMessage());
         }
     }
 
@@ -886,10 +913,11 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
         JSONObject data = new JSONObject();
         try {
             data.put("id", id);
-            triggerJSEvent("sessionEvents", "archiveStopped", data);
         } catch (JSONException e) {
-            Log.i(TAG, "archive stopped: " + id);
+            Log.e(TAG, "archive stopped: " + id);
+            triggerJSEvent("sessionEvents", "warning", "onArchiveStopped: " + e.getMessage());
         }
+        triggerJSEvent("sessionEvents", "archiveStopped", data);
     }
 
     // streamPropertiesListener
@@ -921,6 +949,8 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
 
             this.onStreamPropertyChanged("videoDimensions", newValue, oldValue, stream);
         } catch (JSONException e) {
+            Log.e(TAG, "JSONException" + e.getMessage());
+            triggerJSEvent("sessionEvents", "warning", "onStreamVideoDimensionsChanged: " + e.getMessage());
         }
     }
 
@@ -932,9 +962,11 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
             data.put("newValue", newValue);
             data.put("oldValue", oldValue);
             data.put("stream", streamData);
-            triggerJSEvent("sessionEvents", "streamPropertyChanged", data);
         } catch (JSONException e) {
+            Log.e(TAG, "JSONException" + e.getMessage());
+            triggerJSEvent("sessionEvents", "warning", "onStreamPropertyChanged: " + e.getMessage());
         }
+        triggerJSEvent("sessionEvents", "streamPropertyChanged", data);
     }
 
     // Helper Methods
@@ -956,6 +988,8 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
             data.put("stream", stream);
             triggerJSEvent(eventType, subEvent, data);
         } catch (JSONException e) {
+            Log.e(TAG, "JSONException" + e.getMessage());
+            triggerJSEvent("sessionEvents", "warning", "triggerStreamEvent: " + e.getMessage());
         }
     }
 
@@ -986,7 +1020,7 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
                     JSONObject payload = new JSONObject();
                     try {
                         payload.put("platform", "Android");
-                        payload.put("cp_version", "3.4.3");
+                        payload.put("cp_version", "3.4.15");
                     } catch (JSONException e) {
                         Log.i(TAG, "Error creating payload json object");
                     }
@@ -995,7 +1029,7 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
                     params.put("partner_id", apiKey);
                     params.put("payload", payload.toString());
                     params.put("source", "https://github.com/opentok/cordova-plugin-opentok");
-                    params.put("build", "2.15.3");
+                    params.put("build", "2.16.2");
                     params.put("session_id", sessionId);
                     if (connectionId != null) {
                         params.put("action", "cp_on_connect");
@@ -1018,6 +1052,8 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
             connection.put("creationTime", arg1.getCreationTime());
             connection.put("data", arg1.getData());
         } catch (JSONException e) {
+            Log.e(TAG, "JSONException" + e.getMessage());
+            triggerJSEvent("sessionEvents", "warning", "createDataFromConnection: " + e.getMessage());
         }
         return connection;
     }
@@ -1039,7 +1075,10 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
             try {
                 videoDimensions.put("width", arg1.getVideoWidth());
                 videoDimensions.put("height", arg1.getVideoHeight());
-            } catch (JSONException e) {}
+            } catch (JSONException e) {
+                Log.e(TAG, "JSONException" + e.getMessage());
+                triggerJSEvent("sessionEvents", "warning", "createDataFromStream: " + e.getMessage());
+            }
             stream.put("videoDimensions", videoDimensions);
 
             String videoType = "custom";
@@ -1063,7 +1102,9 @@ public class OpenTokAndroidPlugin extends CordovaPlugin
         try {
             message.put("eventType", type);
             message.put("data", data);
-        } catch (JSONException e) { }
+        } catch (JSONException e) {
+            Log.e(TAG, "JSONException" + e.getMessage());
+        }
 
         PluginResult myResult = new PluginResult(PluginResult.Status.OK, message);
         myResult.setKeepCallback(true);

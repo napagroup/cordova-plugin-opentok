@@ -54,10 +54,10 @@
 
     NSMutableDictionary *payload = [[NSMutableDictionary alloc]init];
     [payload setObject:@"iOS" forKey:@"platform"];
-    [payload setObject:@"3.4.3" forKey:@"cp_version"];
+    [payload setObject:@"3.4.15" forKey:@"cp_version"];
     NSMutableDictionary *logData = [[NSMutableDictionary alloc]init];
     [logData setObject:apiKey forKey:@"partner_id"];
-    [logData setObject:@"2.15.3" forKey:@"build"];
+    [logData setObject:@"2.16.3" forKey:@"build"];
     [logData setObject:@"https://github.com/opentok/cordova-plugin-opentok" forKey:@"source"];
     [logData setObject:@"info" forKey:@"payload_type"];
     [logData setObject:payload forKey:@"payload"];
@@ -457,24 +457,37 @@
 - (void)subscriberDidConnectToStream:(OTSubscriberKit*)sub{
     NSLog(@"iOS Connected To Stream");
     NSMutableDictionary* eventData = [[NSMutableDictionary alloc] init];
-    NSString* streamId = sub.stream.streamId;
-    [eventData setObject:streamId forKey:@"streamId"];
+    @try {
+        NSString* streamId = sub.stream.streamId;
+        [eventData setObject:streamId forKey:@"streamId"];
+    } @catch (NSException *exception) {
+        [self triggerJSEvent: @"sessionEvents" withType: @"warning" withData: exception.reason];
+    }
     [self triggerJSEvent: @"subscriberEvents" withType: @"connected" withData: eventData];
     [self triggerJSEvent: @"sessionEvents" withType: @"subscribedToStream" withData: eventData]; // Backwards compatibility
 }
 - (void)subscriberDidDisconnectFromStream:(OTSubscriberKit*)sub{
+    NSLog(@"iOS Disconnected From Stream");
     NSMutableDictionary* eventData = [[NSMutableDictionary alloc] init];
-    NSString* streamId = sub.stream.streamId;
-    [eventData setObject:streamId forKey:@"streamId"];
+    @try {
+        NSString* streamId = sub.stream.streamId;
+        [eventData setObject:streamId forKey:@"streamId"];
+    } @catch (NSException *exception) {
+        [self triggerJSEvent: @"sessionEvents" withType: @"warning" withData: exception.reason];
+    }
     [self triggerJSEvent: @"subscriberEvents" withType: @"disconnected" withData: eventData];
 }
 - (void)subscriber:(OTSubscriber*)sub didFailWithError:(OTError*)error{
     NSLog(@"subscriber didFailWithError %@", error);
     NSMutableDictionary* eventData = [[NSMutableDictionary alloc] init];
-    NSString* streamId = sub.stream.streamId;
-    NSNumber* errorCode = [NSNumber numberWithInt:1600];
-    [eventData setObject: errorCode forKey:@"errorCode"];
-    [eventData setObject:streamId forKey:@"streamId"];
+    @try {
+        NSString* streamId = sub.stream.streamId;
+        NSNumber* errorCode = [NSNumber numberWithInt:1600];
+        [eventData setObject: errorCode forKey:@"errorCode"];
+        [eventData setObject:streamId forKey:@"streamId"];
+    } @catch (NSException *exception) {
+        [self triggerJSEvent: @"sessionEvents" withType: @"warning" withData: exception.reason];
+    }
     [self triggerJSEvent: @"sessionEvents" withType: @"subscribedToStream" withData: eventData];
 }
 - (void)subscriberVideoDataReceived:(OTSubscriber*)sub{
