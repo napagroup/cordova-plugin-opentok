@@ -1,7 +1,7 @@
 {
-  "name": "cordova-plugin-opentok",
-  "version": "3.4.15",
-  "description": "Add live video streaming to your Cordova Application (from v3.4.3)",
+  "name": "napa-cordova-plugin-opentok",
+  "version": "3.4.16",
+  "description": "Add live video streaming to your Cordova Application (from v3.4.3).",
   "scripts": {
     "download.js.sdk": "node scripts/downloadJSSDK.js",
     "download.ios.sdk": "node scripts/downloadiOSSDK.js",
@@ -16,7 +16,7 @@
     ]
   },
   "dependencies": {
-    "@opentok/client": "2.16.3",
+    "@opentok/client": "2.20.3",
     "exec": "^0.2.1",
     "q": "1.5.1",
     "tar": "^2.2.2"
