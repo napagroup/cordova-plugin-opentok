@@ -2,7 +2,7 @@
 
 #### Version 3.5.0 (09.23.2021)
 - Update Android OpenTok SDK 2.20.2 -- [August 2021](https://tokbox.com/developer/sdks/android/release-notes.html)
-- Update iOS OpenTok SDK 2.20.2 -- [August 2021](https://tokbox.com/developer/sdks/ios/release-notes.html)
+- Update iOS OpenTok SDK 2.20.1` -- [August 2021](https://tokbox.com/developer/sdks/ios/release-notes.html)
 - Update JavaScript OpenTok SDK 2.20.3 -- [August 2021](https://www.npmjs.com/package/@opentok/client)
 
 #### Version 3.4.15 (09.25.2019)
